@@ -1,0 +1,79 @@
+Baud rate 57600
+The microcontroller will regularly send a heartbeat signal “Ready” to indicate when it is ready to receive a command. If the control server has not sent a command since the last “Ready” heartbeat, an input command will be sent immediately. If a command has been sent since the last “Ready”, additional commands will be stored in a queue and sent one per each “Ready” received from the microcontroller
+
+Commands from the Control Software to the robot arm:
+
+“Xxxx”: will command the arm to move the X axis (of the tool) to the position “xxx” millimeters (or to move “xxx” millimeters from the current position if specified as a relative move)
+“Yxxx”: will command the arm to move the Y axis (of the tool) to the position “xxx” millimeters (or to move “xxx” millimeters from the current position if specified as a relative move)
+“Zxxx”: will command the arm to move the Z axis (of the tool) to the position “xxx” millimeters (or to move “xxx” millimeters from the current position if specified as a relative move)
+“Axxx”: will command the arm to move the A axis (rotation about the X axis of the tool) to the position “xxx” degrees (or to move “xxx” degrees from the current position if specified as a relative move)
+“Bxxx”: will command the arm to move the B axis (rotation about the Y axis of the tool) to the position “xxx” degrees (or to move “xxx” degrees from the current position if specified as a relative move)
+“Cxxx”: will command the arm to move the C axis (rotation about the Z axis of the tool) to the position “xxx” degrees (or to move “xxx” degrees from the current position if specified as a relative move)
+“Fxx” sets the feed rate of the moves in millimeters per second that the toolhead will move
+G00 - Rapid Command (move quickly into position when little risk of crash)
+G01 - Linear Feed Command (move slowly and precisely when doing a task)
+G02 - Circular Interpolation, clockwise (I/J/K parameters define the vector from the arc start point to the arc center point)
+G03 - Circular Interpolation, counterclockwise (I/J/K parameters define the vector from the arc start point to the arc center point)
+G04 - Dwell command using “Pxxxx” parameter to set the time top dwell (xxxx) in milliseconds
+G06 - Direct Stepper Move. Moves one stepper/axis the specified distance. Has flags “Ex” where X is the direction, 1 for +, 0 for -; “Fxx” for the feed rate; “Dxx” for distance, xx is the distance in millimeters
+G28 - Return to Home Position (takes XYZ addresses which define the intermediate point that the tool tip will pass through on its way home to machine zero
+G28 - Homes the Arm. Flags “X”, “Y”, “Z” can follow the G28 to indicate that only a particular axis or axes should be homed
+G52 - Local coordinate system - adds an offset using XYZABC parameters to the global coordinate system - useful for repetitive tasks in different locations in the global coordinate system
+G53 - Machine coordinate system - Takes absolute coordinates (X,Y,Z,A,B,C) with reference to machine zero rather than program zero. Can be helpful for tool changes. Nonmodal and absolute only. Subsequent blocks are interpreted from the previously selected Work Coordinate System, G54 to G59, even if it is not explicitly programmed (don’t need another code to turn it off, if only applies to that line). 
+G54 to G59 - Work coordinate systems - Each tuple (XYZ) of axis offsets relates program zero directly to machine zero.
+G60 - Save Current Position (use this to implement a teach function) possible parameter S for the memory slot to use to save the position?
+G61 - Return to Saved Position “Sxx” for the “xx” position, “Fxx” for an “xx” feedrate
+G68 - Rotate Coordinate System - Rotate coordinate system an angle given with “Rxx” where “xx” is the angle in degrees, in the plane given by G17, G18, or G19 (XY, ZX, YZ)
+G69 - Turn off coordinate system rotation (G68)
+G90 - Absolute Programming - Positioning defined with reference to part zero
+G91 - Incremental Programming - Positioning defined with reference to previous position
+G92 - Set Position - Sets the current position as the given XYZ parameters
+M00 - Compulsory Stop
+M03 - Gripper on (closed)/Spindle on (clockwise rotation) (function depends on tool currently in use)
+M04 - Gripper on (closed)/Spindle on (counterclockwise rotation)  (function depends on tool currently in use)
+M05 - Gripper off (open)/Spindle stop (function depends on tool currently in use)
+M06 - Automatic Tool Change - T parameter tells what tool to change to. “Txx” would call up tool “xx”
+M17 - Enable Steppers
+M18 - Disable Steppers
+M30 - End of Program. With return to program top (reset)
+M52 - Unload last tool from spindle (empty spindle)
+M98 - Subprogram Call - Takes an address P to specify which subprogram to call. For example, “M98 P1234” calls subprogram “O1234”
+M99 - Subprogram End - when placed that the end of a subprogram, it returns control to the main program
+M119 - Endstop States. Requests the states of all endstops. Endstops return either “open” or “triggered”
+M112 - Emergency Stop (also need hardware-level Estop?)
+M114 - Get Current Position - Gets the current position of the tip of the active tool
+M154 - Position Auto-Report - Uses parameter “Sxxxx” to tell the Arm to report it’s position every “xxxx” milliseconds. Call “M154 S0” to disable
+M280 - Servo Position - Get the position of a servo. Parameter “Pxx” specifies the “xx” servo index
+Add Marlin SD card GCode commands to open/close/write/read files?
+
+How to use these?
+L? - fixed cycle loop count
+O? - Program Name
+
+Commands from the Robot Arm to Control Software: 
+M118 - Serial Print - Sends a serial message back to the control software:
+“Ready” signifies the arm is prepared to receive another command	
+“Unknown” signifies the previous command was not recognized as a valid command
+“Cannot execute” signifies that the arm recognized the command, but could not execute it
+Will need to add more to respond to all defined requests from the arm
+
+Commands from Control Software to Robot Arm (not implemented yet, but might want later)r:
+G41/G42 - Left/Right Cutter Comp
+G40 - Cancels cutter comp. (G41/G42)
+G43 - Tool height Compensation Negative (takes an H address to specify the location of the distance to use as the offset)
+G44 - Tool height offset compensation positive (takes an H address to specify the location of the distance to use as the offset)
+G49 - Cancels tool length compensation (G43/G44)
+G20 - Programming in inches signifies that the units being used are inches
+G21 - Programming in millimeters signifies that the units being used are millimeters
+G31 - Feed until skip function - used for tool length probing, etc
+G100 - Tool Length Measurement
+M01 - Optional Stop - Machine only stops if optional stop is toggled on - How do I want to  toggle this function? Do I need a different set of codes I can send to the robot arm that do things like toggle optional stops on/off?
+M10 - Pallet Clamp On (If ever using a pallet clamp with the robot arm?)
+M11 - Pallet Clamp Off (If ever using a pallet clamp with the robot arm?)
+M60 - Automatic Pallet Changer (If ever using a pallet system)
+M201 - Acceleration Limit - Sets the max acceleration for one or more axes
+M203 - Feed Rate Limit - Set max feed rate for one or more axes
+M240 - Trigger Camera - Causes the camera to take an image
+
+
+Commands from the Robot Arm to the Control Software (not implemented yet, but might want later):
