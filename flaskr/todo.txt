@@ -1,0 +1,24 @@
+Also, queue.get() if the queue is empty will form an infinite loop. I might need a different queue implemenetation or to check that the queue is not empty every time I use queue.get()
+
+Map all inputs to particular GCODE commands - make sure all GCODE commands are accounted for
+
+Inputs to add:
+- Absolute move to a particular X,Y,Z,Rx,Ry,Rz position (values default to zero)
+- Jog X,Y,Z,Rx,Ry,Rz (have a default distance/angle, but be able to input a different distance/angle to jog)
+	- Be able to change the distance with buttons? 
+- Teach position
+- Home arm
+- Buttons to open/close the end effector
+- Load/Run/Stop/Save a program as a text file (and step through the program one command at a time)
+- Display for the current command queue and a button to add a command to the queue
+- Method/button to set calibration offsets for each joint to make sure zero is really zero
+- A way to adjust the tool coordinate offset (XYZRxRyRz)
+- Zero return (return to zero point without homing)
+- Zero axes button (relative coordinate system?)
+- Rapids feed adjustment (5%, 25%, 50%, 100%)
+- Feed rate adjustment (-10%, 100%, +10%)
+- Tool change button?
+
+Displays to add:
+- Display of current joint angles and LS statuses
+- Distance to go in each commanded move?

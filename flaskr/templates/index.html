@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title> Robot Arm HMI </title>
+</head>
+<body>
+	<h1> Robot Arm HMI </h1>
+	<div>
+	<form action="/" method="post">
+		<label> Enter a Command </label>
+		<input type="text" name="command"/>
+		<input type="submit"/>
+	</form>
+	</div>
+	
+	<div>
+	<form action="/function" method="post">
+		<lable> Form 2 </lable>
+		<input type="hidden" value="funciton_command" name="function_id"/>
+		<input type="submit" value="Function"/>
+	</form>
+	</div>
+	
+	
+		{% for command in recent_commands %}
+		<ul> {{command}} </ul>
+		
+		{% endfor %}
+</body>
+</html>
